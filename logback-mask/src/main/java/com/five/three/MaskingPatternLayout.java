@@ -4,38 +4,61 @@ import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@Component
 public class MaskingPatternLayout extends PatternLayout {
 	
-	public @Nullable String mask;
-	
-	public @Nullable String patternsProperty;
-	
-	@Override
-	public String doLayout(ILoggingEvent event) {
-		// TODO Auto-generated method stub
-		return (!StringUtils.isBlank(patternsProperty) && !StringUtils.isBlank(mask)) ?
-                Stream.of(event.getMessage().split("\\s+"))
-                .map(this::maskMessage)
-                .collect(Collectors.joining(" "))
-        : event.getMessage();
+	private String patternsProperty;
+	private Optional<Pattern> pattern;
+	private char mask;
+
+	public void setMask(String mask) {
+		this.mask = 'x';
+	}
+
+	public String getPatternsProperty() {
+		return patternsProperty;
+	}
+
+	public void setPatternsProperty(String patternsProperty) {
+		this.patternsProperty = patternsProperty;
+		if (this.patternsProperty != null) {
+			this.pattern = Optional.of(Pattern.compile(patternsProperty, Pattern.MULTILINE));
+		} else {
+			this.pattern = Optional.empty();
+		}
 	}
 	
-	private String maskMessage(String event){
-        Pattern pattern = Pattern.compile(patternsProperty);
-        Matcher matcher = pattern.matcher(event);
-        return (matcher.matches()) ?
-                IntStream
-                        .range(0, event.length())
-                        .mapToObj(count -> mask)
-                        .collect(Collectors.joining()) :
-                event;
-    }
+	
+
+	@Override
+	public String doLayout(ILoggingEvent event) {
+		final StringBuilder message = new StringBuilder(super.doLayout(event));
+
+		if (pattern.isPresent()) {
+			Matcher matcher = pattern.get().matcher(message);
+			while (matcher.find()) {
+
+				int group = 1;
+				while (group <= matcher.groupCount()) {
+					if (matcher.group(group) != null) {
+						for (int i = matcher.start(group); i < matcher.end(group); i++) {
+							message.setCharAt(i, this.mask);
+						}
+					}
+					group++;
+				}
+			}
+		}
+		return message.toString();
+	}
 
 }

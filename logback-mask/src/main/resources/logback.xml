@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="">
-            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %replace(%msg){'\d{9,16}', 'XXXX'}%n</pattern>
-        </encoder>
-    </appender>
-    <root level="info">
-        <appender-ref ref="STDOUT" />
-    </root>
+	<property file="src/main/resources/application.properties" />
+    <appender name="fileAppender1" class="ch.qos.logback.core.FileAppender">
+    <file>c:/logs/kp-ws.log</file>
+    <append>true</append>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+        <layout class="com.five.three.MaskingPatternLayout">
+            <patternsProperty>(${log.pattern.match.socialsecurity})</patternsProperty>
+            <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <mask>X</mask>
+        </layout>
+    </encoder>
+</appender>
+<root level="DEBUG">
+    <appender-ref ref="fileAppender1" />
+</root>
 </configuration>

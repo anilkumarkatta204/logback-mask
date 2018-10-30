@@ -11,6 +11,9 @@ public class LogbackMaskApplication implements CommandLineRunner {
 	@Autowired 
 	private BusinessService bService;
 	
+	@Autowired
+	private PropertyProcessor pr;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(LogbackMaskApplication.class, args);
 	}
@@ -18,6 +21,7 @@ public class LogbackMaskApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		bService.someBusiness("MY Account Number: 1234567890123456");
-		bService.someBusiness("MY SSN Number: 123456789");
+		bService.someBusiness("MY SSN Number: 345-55-6789");
+		pr.displayAllProperties();
 	}
 }
