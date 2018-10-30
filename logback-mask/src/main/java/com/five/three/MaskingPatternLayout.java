@@ -21,7 +21,7 @@ public class MaskingPatternLayout extends PatternLayout {
 	private char mask;
 
 	public void setMask(String mask) {
-		this.mask = 'x';
+		this.mask = mask.toCharArray()[0];
 	}
 
 	public String getPatternsProperty() {
