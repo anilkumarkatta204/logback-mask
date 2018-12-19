@@ -9,9 +9,10 @@ public class Test {
 	public static void main(String[] args) {
 		ExpressionParser parser = new SpelExpressionParser();
 		Expression exp = parser.parseExpression("'Hello World'");
-		String message = (String) exp.getValue();
 		
-		System.out.println(message);
+		String messager = (String) exp.getValue();
+		
+		System.out.println(messager);
 
 	}
 
